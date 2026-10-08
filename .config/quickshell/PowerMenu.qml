@@ -27,6 +27,7 @@ PanelWindow {
     readonly property int defaultSize: 100
     property int menuSize: defaultSize
     property string icon: ""
+    readonly property int iconRes: 128
 
     Component.onCompleted: BluetoothState.init()
 
@@ -415,7 +416,11 @@ PanelWindow {
                                 Image {
                                     anchors.centerIn: parent
                                     width: 20; height: 20
+                                    sourceSize: Qt.size(root.iconRes, root.iconRes)
                                     fillMode: Image.PreserveAspectFit
+                                    smooth: true
+                                    mipmap: true
+                                    asynchronous: true
                                     source: root.iconDir + entry.modelData.icon
                                 }
                             }
@@ -517,7 +522,11 @@ PanelWindow {
                                 Image {
                                     anchors.centerIn: parent
                                     width: 20; height: 20
+                                    sourceSize: Qt.size(root.iconRes, root.iconRes)
                                     fillMode: Image.PreserveAspectFit
+                                    smooth: true
+                                    mipmap: true
+                                    asynchronous: true
                                     source: root.iconDir + row.modelData.icon
                                     opacity: row.on ? 1 : 0.4
                                 }
