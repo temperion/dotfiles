@@ -20,3 +20,8 @@ output = "~/.config/gtk-4.0/colors.css"
 [quickshell]
 input  = "~/.config/43pr/templates/quickshell-theme.json"
 output = "~/.cache/43pr/quickshell-theme.json"
+[openrgb]
+# Cor de destaque do tema -> ARGB das fans/cooler (via OpenRGB)
+input  = "~/dotfiles/.config/43pr/templates/openrgb-color.txt"
+output = "~/.cache/43pr/openrgb-color"
+reload = ["/home/rafa/dotfiles/.config/43pr/bin/rgb-sync.sh"]
