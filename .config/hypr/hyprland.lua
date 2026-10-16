@@ -7,7 +7,7 @@ mainMod    = "SUPER"
 terminal   = "kitty"
 menu       = "rofi -show drun"
 fileManager = "thunar"
-browser    = "brave"
+browser    = "firefox"
 
 ---- AUTOSTART ----
 
@@ -17,8 +17,9 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
     hl.exec_cmd("/usr/lib/polkit-kde-authentication-agent-1")
-
+    hl.exec_cmd("/home/rafa/.local/bin/gpu-underclock.sh")
     hl.exec_cmd("awww-daemon")
+    hl.exec_cmd("/home/rafa/dotfiles/.config/hypr/scripts/wallpaper-rotate.sh 600") -- wallpaper aleatorio a cada 10 min
     hl.exec_cmd("sleep 2 && qs")
 end)
 
@@ -27,12 +28,14 @@ end)
 hl.env("XCURSOR_SIZE", "14")
 hl.env("QT_QPA_PLATFORM", "wayland")
 hl.env("MOZ_ENABLE_WAYLAND", "1")
+hl.env("LIBVA_DRIVER_NAME", "nvidia")
+hl.env("__GLX_VENDOR_LIBRARY_NAME", "nvidia")
 
 ---- INPUT ----
 
 hl.config({
     input = {
-        kb_layout = "us,latam",
+        kb_layout = "br,us",
         follow_mouse = 1,
         sensitivity = 0.5,
         touchpad = {

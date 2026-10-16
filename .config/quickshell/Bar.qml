@@ -104,7 +104,7 @@ Scope {
 
     readonly property var moduleIds: ["stats", "ws", "media", "volume", "battery", "net", "notif", "wall", "settings", "power"]
     readonly property var moduleDefs: [
-        { id: "stats", l: "CPU / RAM (x)", k: "showStats" },
+        { id: "stats", l: "CPU / GPU / RAM / SSD (x)", k: "showStats" },
         { id: "ws", l: "Workspaces", k: "showWs" },
         { id: "media", l: "Media", k: "showMedia" },
         { id: "volume", l: "Volume", k: "showVolume" },
@@ -232,6 +232,10 @@ Scope {
 
     property int cpuUsage: 0
     property int memPercent: 0
+    property int cpuTemp: -1
+    property int gpuTemp: -1
+    property int ramTemp: -1
+    property int ssdTemp: -1
     property string netState: "disconnected"
     property real _prevTotal: 0
     property real _prevIdle: 0
@@ -274,6 +278,76 @@ Scope {
                 }
                 if (s !== root.netState) root.netState = s;
             }
+        }
+    }
+
+    function sensorTempCmd(patterns) {
+        return "sensors 2>/dev/null | awk '/" + patterns.join("|") +
+            "/ {for(i=1;i<=NF;i++) if($i ~ /\\+?[0-9]+(\\.[0-9]+)?°C/) " +
+            "{gsub(/[+°C]/, \"\", $i); print $i; exit}}'"
+    }
+    function tempLabel(t) { return t >= 0 ? " " + t + "°C" : ""; }
+
+    Process {
+        id: cpuTempProc
+        command: ["sh", "-c", root.sensorTempCmd(["Tctl:", "Tdie:", "Package id 0:"])]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const v = parseFloat(text.trim());
+                root.cpuTemp = isNaN(v) ? -1 : Math.round(v);
+            }
+        }
+    }
+    // NVIDIA: nvidia-smi (o driver proprietario nao aparece no `sensors`). AMD: cai no `sensors`.
+    Process {
+        id: gpuTempProc
+        command: ["sh", "-c",
+            "t=$(nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits 2>/dev/null | head -n1); " +
+            "if [ -n \"$t\" ]; then echo \"$t\"; else " +
+            root.sensorTempCmd(["edge:", "junction:", "GPU Temp:"]) + "; fi"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const v = parseFloat(text.trim());
+                root.gpuTemp = isNaN(v) ? -1 : Math.round(v);
+            }
+        }
+    }
+
+    // DDR5: sensor spd5118 de cada pente; mostra o mais quente.
+    Process {
+        id: ramTempProc
+        command: ["sh", "-c",
+            "sensors 'spd5118-*' 2>/dev/null | awk '/temp1:/ {gsub(/[+°C]/, \"\", $2); v = $2 + 0; if (!f || v > m) m = v; f = 1} END {if (f) print m}'"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const v = parseFloat(text.trim());
+                root.ramTemp = isNaN(v) ? -1 : Math.round(v);
+            }
+        }
+    }
+    // SSD principal: o NVMe onde esta montada a raiz (/); se nao achar, o primeiro NVMe do `sensors`.
+    Process {
+        id: ssdTempProc
+        command: ["sh", "-c",
+            "d=$(lsblk -no PKNAME \"$(findmnt -no SOURCE / | sed 's/\\[.*//')\" 2>/dev/null | head -n1); c=${d%n*}; " +
+            "t=$(cat /sys/class/nvme/$c/hwmon*/temp1_input /sys/class/nvme/$c/device/hwmon/hwmon*/temp1_input 2>/dev/null | head -n1); " +
+            "if [ -n \"$t\" ]; then echo $((t / 1000)); else " +
+            root.sensorTempCmd(["Composite:"]) + "; fi"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const v = parseFloat(text.trim());
+                root.ssdTemp = isNaN(v) ? -1 : Math.round(v);
+            }
+        }
+    }
+
+    Timer {
+        interval: 5000; running: root.barVisible; repeat: true; triggeredOnStart: true
+        onTriggered: {
+            if (!cpuTempProc.running) cpuTempProc.running = true;
+            if (!gpuTempProc.running) gpuTempProc.running = true;
+            if (!ramTempProc.running) ramTempProc.running = true;
+            if (!ssdTempProc.running) ssdTempProc.running = true;
         }
     }
 
@@ -507,17 +581,35 @@ Scope {
                 baseSize: root.sizeCpuRam
                 glyphSize: root.sizeCpuRam + 4
                 vglyph: "\uDB81\uDE1A"
-                text: "CPU " + root.cpuUsage + "%"
+                text: "CPU " + root.cpuUsage + "%" + root.tempLabel(root.cpuTemp)
                 vtext: ""
-                color: root.vertical && root.cpuUsage >= 85 ? Theme.danger : Theme.text
+                color: (root.vertical && root.cpuUsage >= 85) || root.cpuTemp >= 85 ? Theme.danger : Theme.text
+            }
+            Mod {
+                visible: root.gpuTemp >= 0
+                baseSize: root.sizeCpuRam
+                glyphSize: root.sizeCpuRam + 4
+                vglyph: "\uDB82\uDCAE"
+                text: "GPU" + root.tempLabel(root.gpuTemp)
+                vtext: ""
+                color: root.gpuTemp >= 85 ? Theme.danger : Theme.text
             }
             Mod {
                 baseSize: root.sizeCpuRam
                 glyphSize: root.sizeCpuRam + 4
                 vglyph: "\uDB80\uDF5B"
-                text: "RAM " + root.memPercent + "%"
+                text: "RAM " + root.memPercent + "%" + root.tempLabel(root.ramTemp)
                 vtext: ""
-                color: root.vertical && root.memPercent >= 85 ? Theme.danger : Theme.text
+                color: (root.vertical && root.memPercent >= 85) || root.ramTemp >= 80 ? Theme.danger : Theme.text
+            }
+            Mod {
+                visible: root.ssdTemp >= 0
+                baseSize: root.sizeCpuRam
+                glyphSize: root.sizeCpuRam + 4
+                vglyph: "\uDB80\uDECA"
+                text: "SSD" + root.tempLabel(root.ssdTemp)
+                vtext: ""
+                color: root.ssdTemp >= 70 ? Theme.danger : Theme.text
             }
         }
     }

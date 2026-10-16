@@ -12,7 +12,7 @@
 -- hl.monitor({ output = "HDMI-A-1", mode = "preferred", position = "auto", scale = 1 })
 
 -- 3. Extend / Auto
-hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 }) 
+hl.monitor({ output = "", mode = "1920x1080@144", position = "auto", scale = 1 }) 
 
 -- 4. Duplicate
 -- hl.monitor({ output = "eDP-1", mode = "preferred", position = "0x0", scale = 1 })

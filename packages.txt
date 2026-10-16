@@ -139,7 +139,7 @@ cmatrix
 ttf-jetbrains-mono-nerd
 ttf-iosevka-nerd
 ttf-roboto-mono
-ttf-font-awesome
+otf-font-awesome
 
 # --------------------------------------------------
 # Scripting / Package / Application Utilities
@@ -156,3 +156,12 @@ unzip
 # --------------------------------------------------
 
 hyprmod
+
+# --------------------------------------------------
+# Added: used by the configs but missing above
+# --------------------------------------------------
+
+playerctl
+pavucontrol
+blueman
+lm_sensors
