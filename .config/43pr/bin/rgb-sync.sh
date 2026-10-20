@@ -3,7 +3,7 @@
 # Chamado pelo theme.py a cada troca de tema e no login (autostart do Hyprland).
 
 # Velocidade da respiracao: 0 = mais lenta, 100 = mais rapida.
-speed=20
+speed=0
 
 f="$HOME/.cache/43pr/openrgb-color"
 [[ -r "$f" ]] || exit 0
