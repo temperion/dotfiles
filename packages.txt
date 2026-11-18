@@ -171,3 +171,6 @@ playerctl
 pavucontrol
 blueman
 lm_sensors
+openrgb
+rclone
+xorg-xhost

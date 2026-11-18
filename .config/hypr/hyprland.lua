@@ -16,13 +16,13 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("nm-applet")
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
-    hl.exec_cmd("/usr/lib/polkit-kde-authentication-agent-1")
-    hl.exec_cmd("/home/rafa/.local/bin/gpu-underclock.sh")
+    hl.exec_cmd("systemctl --user start hyprpolkitagent")
+    hl.exec_cmd("$HOME/dotfiles/.config/hypr/scripts/gpu-underclock.sh")
     hl.exec_cmd("awww-daemon")
-    hl.exec_cmd("/home/rafa/dotfiles/.config/hypr/scripts/wallpaper-rotate.sh 600") -- wallpaper aleatorio a cada 10 min
+    hl.exec_cmd("$HOME/dotfiles/.config/hypr/scripts/wallpaper-rotate.sh 600") -- wallpaper aleatorio a cada 10 min
     hl.exec_cmd("openrgb --server") -- servidor do OpenRGB (controle do ARGB sem redetectar a cada troca)
-    hl.exec_cmd("/home/rafa/dotfiles/.config/43pr/bin/rgb-sync.sh") -- ARGB na cor do tema
-    hl.exec_cmd("/home/rafa/dotfiles/.config/hypr/scripts/gdrive-mount.sh") -- Google Drive (Meu Drive + compartilhados)
+    hl.exec_cmd("$HOME/dotfiles/.config/43pr/bin/rgb-sync.sh") -- ARGB na cor do tema
+    hl.exec_cmd("$HOME/dotfiles/.config/hypr/scripts/gdrive-mount.sh") -- Google Drive (Meu Drive + compartilhados)
     hl.exec_cmd("sleep 2 && qs")
 end)
 
