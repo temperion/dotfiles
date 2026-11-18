@@ -7,7 +7,7 @@ mainMod    = "SUPER"
 terminal   = "kitty"
 menu       = "rofi -show drun"
 fileManager = "thunar"
-browser    = "firefox"
+browser    = "zen-browser"
 
 ---- AUTOSTART ----
 
