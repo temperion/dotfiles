@@ -46,7 +46,7 @@ hl.bind("Print", hl.dsp.exec_cmd("sh -c 'file=" .. home .. "/Pictures/$(date +%s
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd("sh -c 'file=" .. home .. "/Pictures/$(date +%s).png; grim -g \"$(slurp)\" \"$file\"; wl-copy < \"$file\"; qs ipc call screenshot notify \"$file\"'"))
 
 -- Keyboard layout
-hl.bind(mainMod .. " + X", hl.dsp.exec_cmd("hyprctl switchxkblayout current next"))
+--hl.bind(mainMod .. " + X", hl.dsp.exec_cmd("hyprctl switchxkblayout current next"))
 
 -- Toggle float window, center and rezise
 hl.bind(mainMod .. " + Space", function()
@@ -74,10 +74,11 @@ hl.bind(mainMod .. " + Space", function()
 end)
 
 -- Gpu screen recorder
+-- hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("bash -c 'PIDFILE=/tmp/osu-gsr.pid; if [ -f \"$PIDFILE\" ] && kill -0 \"$(cat \"$PIDFILE\")\" 2>/dev/null; then kill -INT \"$(cat \"$PIDFILE\")\"; rm -f \"$PIDFILE\"; else mkdir -p ~/Videos; gpu-screen-recorder -w HDMI-A-1 -f 60 -a default_output -o ~/Videos/$(date +%Y-%m-%d_%H-%M-%S).mp4 & echo $! > \"$PIDFILE\"; fi'"))
+-- Cpu screen recorder
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(
-    "bash -c 'PIDFILE=/tmp/osu-gsr.pid; if [ -f \"$PIDFILE\" ] && kill -0 \"$(cat \"$PIDFILE\")\" 2>/dev/null; then kill -INT \"$(cat \"$PIDFILE\")\"; rm -f \"$PIDFILE\"; else mkdir -p ~/Videos; gpu-screen-recorder -w HDMI-A-1 -f 60 -a default_output -o ~/Videos/$(date +%Y-%m-%d_%H-%M-%S).mp4 & echo $! > \"$PIDFILE\"; fi'"
+    "bash -c 'PIDFILE=/tmp/osu-gsr.pid; if [ -f \"$PIDFILE\" ] && kill -0 \"$(cat \"$PIDFILE\")\" 2>/dev/null; then kill -INT \"$(cat \"$PIDFILE\")\"; rm -f \"$PIDFILE\"; notify-send \"Gravação salva\"; else mkdir -p ~/Videos; gpu-screen-recorder -w HDMI-A-1 -f 60 -a default_output -fallback-cpu-encoding yes -o ~/Videos/$(date +%Y-%m-%d_%H-%M-%S).mp4 2>/tmp/gsr.log & echo $! > \"$PIDFILE\"; notify-send \"Gravando...\"; fi'"
 ))
-
 -- Zoom
 local function zoomfunction(value)
     local zoomvalue = hl.get_config("cursor:zoom_factor")

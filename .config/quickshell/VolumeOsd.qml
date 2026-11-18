@@ -154,6 +154,7 @@ PanelWindow {
 
         command: [
             "playerctl",
+            "--ignore-player=firefox,zen,plasma-browser-integration",
             "metadata",
             "--format",
             "{{status}}|{{title}}|{{artist}}|{{position}}|{{mpris:length}}"
@@ -201,6 +202,7 @@ PanelWindow {
 
         command: [
             "playerctl",
+            "--ignore-player=firefox,zen,plasma-browser-integration",
             "--follow",
             "metadata",
             "--format",
@@ -494,7 +496,7 @@ PanelWindow {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        Quickshell.execDetached(["playerctl", "previous"])
+                        Quickshell.execDetached(["playerctl", "--ignore-player=firefox,zen,plasma-browser-integration", "previous"])
                         hideTimer.restart()
                     }
                 }
@@ -507,7 +509,7 @@ PanelWindow {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        Quickshell.execDetached(["playerctl", "play-pause"])
+                        Quickshell.execDetached(["playerctl", "--ignore-player=firefox,zen,plasma-browser-integration", "play-pause"])
                         hideTimer.restart()
                     }
                 }
@@ -520,7 +522,7 @@ PanelWindow {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        Quickshell.execDetached(["playerctl", "next"])
+                        Quickshell.execDetached(["playerctl", "--ignore-player=firefox,zen,plasma-browser-integration", "next"])
                         hideTimer.restart()
                     }
                 }
